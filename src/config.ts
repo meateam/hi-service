@@ -18,6 +18,7 @@ const config = {
             .get("HIS_APM_SERVICE_NAME")
             .default("quota-approval-service")
             .asString(),
+        port: env.get("HIS_PORT").default('8080').asString(),
     },
     usersService: {
         url: env.get("USERS_SERVICE_URL").default('user-service:8080').asString(),

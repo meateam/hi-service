@@ -3,6 +3,7 @@ import menash from "menashmq";
 import Server from "./server";
 import config from "./config";
 import { driver } from "@rocket.chat/sdk";
+import express from "express";
 
 const { service, apmConfig, rabbitmq, hi } = config;
 
@@ -33,6 +34,15 @@ const initHIConnection = async () => {
     }
 };
 
+const initHealthcheck = async () => {
+    const app = express();
+    app.get(["/", "/isalive", "/IsAlive", "/healthcheck"], (req, res) => {
+        res.send(`Service is up`);
+    });
+
+    app.listen(service.port, () => console.log("Health check is up"));
+};
+
 const main = async () => {
     apm.start({
         serviceName: service.name,
@@ -41,7 +51,7 @@ const main = async () => {
         serverUrl: apmConfig.apmURL,
     });
 
-    await Promise.all([initRabbitmq(), initHIConnection()]);
+    await Promise.all([initRabbitmq(), initHIConnection(), initHealthcheck()]);
 
     const hiServer: Server = new Server();
     await hiServer.initializeConsumer(rabbitmq.queue);
