@@ -36,9 +36,12 @@ const initHIConnection = async () => {
 
 const initHealthcheck = async () => {
     const app = express();
-    app.get(["/", "/isalive", "/IsAlive", "/healthcheck"], (req, res) => {
-        res.send(`Service is up`);
-    });
+    app.get(
+        ["/api", "/api/isalive", "/api/IsAlive", "/api/healthcheck"],
+        (req, res) => {
+            res.send(`Service is up`);
+        }
+    );
 
     app.listen(service.port, () => console.log("Health check is up"));
 };
