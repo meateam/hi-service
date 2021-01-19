@@ -21,13 +21,14 @@ export default class NotificationService {
             getUserByID(reciverUserID),
         ]);
 
-        if (!senderUser) {
+        if (!senderUser || !reciverUser) {
+            const isSenderUserFailed: boolean = !senderUser;
+            const failedUserID: string = isSenderUserFailed
+                ? senderUserID
+                : reciverUserID;
+            const userState: string = isSenderUserFailed ? "sender" : "reciver";
             throw new ServerError(
-                `Could not find sender user with id: ${senderUserID}`
-            );
-        } else if (!reciverUser) {
-            throw new ServerError(
-                `Could not find reciver user with id: ${reciverUserID}`
+                `Could not find ${userState} user with id: ${failedUserID}`
             );
         }
 
