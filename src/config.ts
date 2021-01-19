@@ -38,7 +38,7 @@ const config = {
         url: env.get("HIS_RABBITMQ_URL").default("amqp://localhost").asString(),
         queue: env
             .get("HIS_RABBITMQ_QUEUE")
-            .default("hi-send-queue")
+            .default("hiQueue")
             .asString(),
     },
     apmConfig: {
