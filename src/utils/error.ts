@@ -21,6 +21,12 @@ export class ServerError extends ApplicationError {
     }
 }
 
+export class UserNotFoundError extends ServerError {
+    constructor(userState: string, failedUserID: string) {
+        super(`Could not find ${userState} user with id: ${failedUserID}`);
+    }
+}
+
 export class ClientError extends ApplicationError {
     constructor(message?: string, code?: number) {
         super(

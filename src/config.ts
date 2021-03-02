@@ -15,7 +15,7 @@ const esPass = env.get("ELASTICSEARCH_PASSWORD").default("");
 const config = {
     service: {
         name: env
-            .get("HIS_APM_SERVICE_NAME")
+            .get("HIS_SERVICE_NAME")
             .default("quota-approval-service")
             .asString(),
         port: env.get("HIS_PORT").default('8080').asString(),

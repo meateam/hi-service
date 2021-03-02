@@ -58,15 +58,18 @@ const initHealthcheck = async () => {
     }).then(console.log);
 };
 
+const initAPM = async () => {
+    apm.start({
+        serviceName: service.name,
+        secretToken: apmConfig.secretToken,
+        verifyServerCert: apmConfig.verifyServerCert,
+        serverUrl: apmConfig.apmURL,
+    });
+};
+
 const main = async () => {
     try {
-        apm.start({
-            serviceName: service.name,
-            secretToken: apmConfig.secretToken,
-            verifyServerCert: apmConfig.verifyServerCert,
-            serverUrl: apmConfig.apmURL,
-        });
-
+        initAPM();
         await Promise.all([
             initRabbitmq(),
             initHIConnection(),
@@ -79,8 +82,7 @@ const main = async () => {
         console.log(`Server is up.`);
     } catch (err) {
         console.error(err);
-        throw new ServerError(err);
     }
 };
 
-main().catch(console.error);
+main();

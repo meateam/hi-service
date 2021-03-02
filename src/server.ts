@@ -1,12 +1,11 @@
-import config from "./config";
 import NotificationController from "./notification/notification.controller";
+import UsersClient from "./utils/users.client";
 import menash, { ConsumerMessage } from "menashmq";
 import { log, Severity } from "./utils/logger";
 import { ServerError } from "./utils/error";
 import { IPermission } from "./utils/permission.inteface";
-import { initUsersConnection } from "./utils/users.client";
 
-export default class Consumer {
+export default class Server {
     public queue: string | undefined;
 
     /**
@@ -16,7 +15,7 @@ export default class Consumer {
     public async initializeConsumer(queue: string) {
         // Declare a new queue that the consumer will consume from and
         // init the connection to the users service.
-        await Promise.all([menash.declareQueue(queue), initUsersConnection()]);
+        await Promise.all([menash.declareQueue(queue), UsersClient.initUsersConnection()]);
         this.queue = queue;
     }
 
@@ -33,7 +32,7 @@ export default class Consumer {
                         log(
                             Severity.INFO,
                             "Consumed message",
-                            config.service.name,
+                            "activateConsumer",
                             undefined,
                             permission
                         );
@@ -43,7 +42,7 @@ export default class Consumer {
                         log(
                             Severity.ERROR,
                             err.message,
-                            config.service.name,
+                            'activateConsumer',
                             undefined,
                             err
                         );
@@ -54,7 +53,11 @@ export default class Consumer {
                 { noAck: false }
             );
         } else {
-            throw new ServerError();
+            const errMsg = "queue is not defined";
+            log(Severity.ERROR, errMsg, "activateConsumer", undefined, {
+                queue: this.queue,
+            });
+            throw new ServerError(errMsg);
         }
     }
 }

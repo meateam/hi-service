@@ -13,37 +13,38 @@ const packageDefinition = loadSync(PROTO_PATH, {
 });
 const { users }: any = grpc.loadPackageDefinition(packageDefinition);
 
-let usersClient: any = null;
-
-/**
- * Initialize the grpc connection to the users service
- */
-export const initUsersConnection = async (): Promise<void> => {
-    usersClient = await new users.Users(
-        config.usersService.url,
-        grpc.credentials.createInsecure()
-    );
-};
-
-/**
- * Handles the GetUserByID request to the users service and returns a user.
- * @param id the user ID
- */
-export async function getUserByID(id: string): Promise<IUser> {
-    return new Promise((res, rej) => {
-        if (!usersClient) {
-            rej("Users grpc client was not initialized.");
-        }
-        usersClient.GetUserByID(
-            {
-                id,
-            },
-            (err: Error, response: any) => {
-                if (err) {
-                    rej(err);
-                }
-                res(response);
-            }
+export default class UsersClient {
+    static usersClient: any = null;
+    /**
+     * Initialize the grpc connection to the users service
+     */
+    public static async initUsersConnection(): Promise<void> {
+        this.usersClient = await new users.Users(
+            config.usersService.url,
+            grpc.credentials.createInsecure()
         );
-    });
+    }
+
+    /**
+     * Handles the GetUserByID request to the users service and returns a user.
+     * @param id the user ID
+     */
+    public static async getUserByID(id: string): Promise<IUser> {
+        return new Promise((res, rej) => {
+            if (!this.usersClient) {
+                rej("Users grpc client was not initialized.");
+            }
+            this.usersClient.GetUserByID(
+                {
+                    id,
+                },
+                (err: Error, response: any) => {
+                    if (err) {
+                        rej(err);
+                    }
+                    res(response);
+                }
+            );
+        });
+    }
 }
