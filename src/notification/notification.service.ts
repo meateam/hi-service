@@ -54,7 +54,7 @@ export default class NotificationService {
         const userT = user.adfsId.split("@")[0];
         if (!userT) {
             throw new ServerError(
-                `Could not find the user t for user with id: ${user.id}`
+                `Could not find the user T for user with id: ${user.id}`
             );
         }
         return userT;

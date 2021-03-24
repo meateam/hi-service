@@ -16,7 +16,7 @@ const config = {
     service: {
         name: env
             .get("HIS_SERVICE_NAME")
-            .default("quota-approval-service")
+            .default("hi-service")
             .asString(),
         port: env.get("HIS_PORT").default('8080').asString(),
     },
@@ -57,7 +57,7 @@ const config = {
         esUser,
         esPass,
     },
-    debugMode: env.get("HIS_DEBUG_MODE").default("0").asBool(),
+    debugMode: env.get("DEBUG_MODE").default("false").asBool(),
     confLogger: {
         options: {
             hosts: esHost,

@@ -2,9 +2,10 @@ import apm from "elastic-apm-node";
 import menash from "menashmq";
 import Server from "./server";
 import config from "./config";
-import { driver } from "@rocket.chat/sdk";
 import express from "express";
+import { driver } from "@rocket.chat/sdk";
 import { ServerError } from "./utils/error";
+import { log, Severity } from "./utils/logger";
 
 const { service, apmConfig, rabbitmq, hi } = config;
 
@@ -13,11 +14,11 @@ const { service, apmConfig, rabbitmq, hi } = config;
  */
 const initRabbitmq = async () => {
     try {
-        console.log("Attempt connection to RabbitMQ");
+        log(Severity.INFO, "Attempt connection to RabbitMQ", 'initRabbitmq');
         await menash.connect(rabbitmq.url);
-        console.log("Connected to RabbitMQ");
+        log(Severity.INFO, "Connected to RabbitMQ", 'initRabbitmq');
     } catch (err) {
-        console.error("Could not connect to RabbitMQ");
+        log(Severity.ERROR, "Could not connect to RabbitMQ", 'initRabbitmq');
         throw new ServerError(err);
     }
 };
@@ -27,16 +28,16 @@ const initRabbitmq = async () => {
  */
 const initHIConnection = async () => {
     try {
-        console.log("Attempt connection to HI servers");
+        log(Severity.INFO, "Attempt connection to HI servers", 'initHIConnection');
         await driver.connect({ host: hi.chatUrl, useSsl: hi.ssl });
-        console.log("Connected to HI servers");
+        log(Severity.INFO, "Connected to HI servers", 'initHIConnection');
         await driver.login({
             username: hi.loginUser,
             password: hi.loginPass,
         });
-        console.log("Logged in to HI servers");
+        log(Severity.INFO, "Logged in to HI servers", 'initHIConnection');
     } catch (err) {
-        console.error("Could not connect to HI servers");
+        log(Severity.ERROR, "Could not connect to HI servers", 'initHIConnection');
         throw new ServerError(err);
     }
 };
@@ -45,7 +46,7 @@ const initHIConnection = async () => {
  * Initialize express server for healthcheck
  */
 const initHealthcheck = async () => {
-    return new Promise((res, rej) => {
+    return new Promise<string>((resolve, reject) => {
         const app = express();
         app.get(
             ["/api", "/api/isalive", "/api/IsAlive", "/api/healthcheck"],
@@ -54,8 +55,10 @@ const initHealthcheck = async () => {
             }
         );
 
-        app.listen(service.port, () => res("Health check is up"));
-    }).then(console.log);
+        app.listen(service.port, () => resolve("Health check is up"));
+    })
+    .then((healthCheckMsg: string) => log(Severity.INFO, healthCheckMsg, 'initHealthcheck'))
+    .catch((err: Error) => log(Severity.INFO, err.message, 'initHealthcheck', undefined, err));
 };
 
 const initAPM = async () => {
@@ -79,9 +82,9 @@ const main = async () => {
         const hiServer: Server = new Server();
         await hiServer.initializeConsumer(rabbitmq.queue);
         await hiServer.activateConsumer();
-        console.log(`Server is up.`);
+        log(Severity.INFO, "Server is up.", 'main');
     } catch (err) {
-        console.error(err);
+        log(Severity.ERROR, err.message, 'main', undefined, err);
     }
 };
 

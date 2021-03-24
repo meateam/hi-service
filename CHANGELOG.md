@@ -7,6 +7,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-## [v1.0.0] - 2021-2-17
 ### Added
-- FEAT([3](https://github.com/meateam/hi-service/pull/3)): hi service notify user on permission change
+- major: ([3](https://github.com/meateam/hi-service/pull/3)): hi service notify user on permission change
+
+[unreleased]: https://github.com/meateam/hi-service/compare/master...develop
