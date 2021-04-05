@@ -3,8 +3,8 @@ import config from "../config";
 import { loadSync } from "@grpc/proto-loader";
 import { IUser } from "./users.interface";
 
-const PROTO_PATH = `${__dirname}/../../proto/users.proto`;
-const packageDefinition = loadSync(PROTO_PATH, {
+const protoPath = `${__dirname}/../../proto/users.proto`;
+const packageDefinition = loadSync(protoPath, {
     keepCase: true,
     longs: String,
     enums: String,
