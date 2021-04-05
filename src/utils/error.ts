@@ -21,7 +21,7 @@ export class ServerError extends ApplicationError {
     }
 }
 
-export class UserNotFoundError extends ServerError {
+export class UserNotFoundError extends ApplicationError {
     constructor(userState: string, failedUserID: string) {
         super(`Could not find ${userState} user with id: ${failedUserID}`);
     }
