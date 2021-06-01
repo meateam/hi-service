@@ -79,4 +79,7 @@ const config = {
     },
 };
 
+export const tomcalDest: string = process.env.GW_TOMCAL_DEST_VALUE || 'TOMCAL';
+export const ctsDest: string = process.env.GW_CTS_DEST_VALUE || 'CTS';
+
 export default config;

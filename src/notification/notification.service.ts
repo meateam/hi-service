@@ -1,9 +1,10 @@
 import UsersClient from "src/utils/users.client";
-import { IUser } from "src/utils/users.interface";
+import { IUser, EXTERNAL_DESTS } from "src/utils/users.interface";
 import { driver } from "@rocket.chat/sdk";
 import { ServerError, UserNotFoundError } from "../utils/error";
 import { log, Severity } from "../utils/logger";
 import { IMessageReceiptAPI } from "@rocket.chat/sdk/dist/utils/interfaces";
+import { Types } from "mongoose";
 
 export default class NotificationService {
     /**
@@ -15,8 +16,14 @@ export default class NotificationService {
         senderUserID: string,
         receiverUserID: string
     ): Promise<void> {
+        const destination: string | undefined = !this.isValidObjectId(
+            senderUserID
+        )
+            ? String(EXTERNAL_DESTS.TOMCAL)
+            : undefined;
+
         const [senderUser, reciverUser]: [IUser, IUser] = await Promise.all([
-            UsersClient.getUserByID(senderUserID),
+            UsersClient.getUserByID(senderUserID, destination),
             UsersClient.getUserByID(receiverUserID),
         ]);
 
@@ -58,5 +65,11 @@ export default class NotificationService {
             );
         }
         return userT;
+    }
+
+    private static isValidObjectId(id: string) {
+        return (
+            Types.ObjectId.isValid(id) && String(new Types.ObjectId(id)) === id
+        );
     }
 }

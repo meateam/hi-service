@@ -22,6 +22,7 @@
     "express": "^4.17.1",
     "grpc": "^1.23.3",
     "menashmq": "^0.1.4",
+    "mongoose": "^5.12.12",
     "winston-elasticsearch": "^0.7.13"
   },
   "devDependencies": {
