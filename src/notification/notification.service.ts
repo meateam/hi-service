@@ -39,34 +39,55 @@ export default class NotificationService {
         }
 
         const msg = `${senderUser.fullName} שיתף איתך קובץ.`;
-        const reciverUserT = this.extractUserT(reciverUser);
+        const reciverUserTs = this.extractUserTs(reciverUser);
 
-        const hiResponse:
-            | IMessageReceiptAPI
-            | IMessageReceiptAPI[] = await driver.sendDirectToUser(
-            msg,
-            reciverUserT
-        );
-
-        log(
-            Severity.INFO,
-            Array.isArray(hiResponse) ? hiResponse[0].msg : hiResponse.msg,
-            "sendSharedFileNotification",
-            undefined,
-            hiResponse
+        await Promise.all(
+            reciverUserTs.map((userT) =>
+                driver
+                    .sendDirectToUser(msg, userT)
+                    .then(
+                        (
+                            hiResponse:
+                                | IMessageReceiptAPI
+                                | IMessageReceiptAPI[]
+                        ) =>
+                            log(
+                                Severity.INFO,
+                                Array.isArray(hiResponse)
+                                    ? hiResponse[0].msg
+                                    : hiResponse.msg,
+                                "sendSharedFileNotification",
+                                undefined,
+                                hiResponse
+                            )
+                    )
+            )
         );
     }
 
-    private static extractUserT(user: IUser) {
-        const userT = user.adfsId;
-        if (!userT) {
+    /**
+     * A function that accepts kartofel user and returns all of its
+     * adfsIds from the 'domainUsers'.
+     * @param user kartofel user
+     * @returns list of adfsIds
+     */
+    private static extractUserTs(user: IUser): string[] {
+        const userTs: string[] = user.domainUsers
+            .map((domainUser) => domainUser.adfsUID)
+            .filter((adfsUID) => adfsUID) as string[];
+        if (!userTs) {
             throw new ServerError(
                 `Could not find the user T for user with id: ${user.id}`
             );
         }
-        return userT;
+        return userTs;
     }
 
+    /**
+     * A function that checks if a string is a mongodb ObjectId.
+     * @param id string that will be checked
+     * @returns true or false if the ID is a mongodb ObjectId
+     */
     private static isValidObjectId(id: string) {
         return (
             Types.ObjectId.isValid(id) && String(new Types.ObjectId(id)) === id

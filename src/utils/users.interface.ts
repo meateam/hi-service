@@ -1,4 +1,13 @@
-import { ctsDest, tomcalDest } from '../config';
+import { ctsDest, tomcalDest } from "../config";
+
+export interface IDomainUser {
+    id?: string;
+    domain?: string;
+    name?: string;
+    uniqueID?: string;
+    adfsUID?: string;
+    personId?: string | IUser;
+}
 
 export interface IUser {
     id: string;
@@ -8,10 +17,10 @@ export interface IUser {
     hierarchy?: string[];
     hierarchyFlat: string;
     mail: string;
-    adfsId?: string;
+    domainUsers: IDomainUser[];
 }
 
 export enum EXTERNAL_DESTS {
-  TOMCAL = tomcalDest as any,
-  CTS = ctsDest as any,
+    TOMCAL = tomcalDest as any,
+    CTS = ctsDest as any,
 }
