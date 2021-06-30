@@ -1,4 +1,4 @@
-//permit-service
+//hi-service
 pipeline {
   agent {    
        kubernetes {
