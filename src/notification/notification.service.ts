@@ -16,11 +16,9 @@ export default class NotificationService {
         senderUserID: string,
         receiverUserID: string
     ): Promise<void> {
-        const destination: string | undefined = !this.isValidObjectId(
-            senderUserID
-        )
+        const destination: string = !this.isValidObjectId(senderUserID)
             ? String(EXTERNAL_DESTS.TOMCAL)
-            : undefined;
+            : "";
 
         const [senderUser, reciverUser]: [IUser, IUser] = await Promise.all([
             UsersClient.getUserByID(senderUserID, destination),
@@ -39,7 +37,7 @@ export default class NotificationService {
         }
 
         const msg = `${senderUser.fullName} שיתף איתך קובץ.`;
-        const reciverUserTs = this.extractUserTs(reciverUser);
+        const reciverUserTs: string[] = this.extractUserTs(reciverUser);
 
         await Promise.all(
             reciverUserTs.map((userT) =>
@@ -88,7 +86,7 @@ export default class NotificationService {
      * @param id string that will be checked
      * @returns true or false if the ID is a mongodb ObjectId
      */
-    private static isValidObjectId(id: string) {
+    private static isValidObjectId(id: string): boolean {
         return (
             Types.ObjectId.isValid(id) && String(new Types.ObjectId(id)) === id
         );
