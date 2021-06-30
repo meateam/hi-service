@@ -28,8 +28,9 @@ export default class UsersClient {
     /**
      * Handles the GetUserByID request to the users service and returns a user.
      * @param id the user ID
+     * @param destination the destination of the user in case it is an external user
      */
-    public static async getUserByID(id: string): Promise<IUser> {
+    public static async getUserByID(id: string, destination?: string): Promise<IUser> {
         return new Promise((res, rej) => {
             if (!this.usersClient) {
                 rej("Users grpc client was not initialized.");
@@ -37,6 +38,7 @@ export default class UsersClient {
             this.usersClient.GetUserByID(
                 {
                     id,
+                    destination,
                 },
                 (err: Error, response: any) => {
                     if (err) {
